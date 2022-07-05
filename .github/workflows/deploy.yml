@@ -29,7 +29,7 @@ jobs:
           # Required by Terraform
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          REPO_URL: https://github.com/bradles76/ScanGithubAct.git
+          REPO_URL: git://github.com/bradles76/ScanGithubAct.git
         with:
           # Required by Accurics
           app-id: ${{ secrets.ACCURICS_APP_ID }}
