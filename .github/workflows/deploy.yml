@@ -23,13 +23,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Accurics
-        uses: accurics/accurics-action@v1.3
+        uses: accurics/accurics-action@v2.0.1
         id: accurics
         env:
           # Required by Terraform
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          REPO_URL: git://github.com/bradles76/ScanGithubAct.git
+          REPO_URL: ${{ github.repositoryUrl }}
+          GIT_BRANCH: ${{ github.ref_name }}
+          GIT_COMMIT: ${{ github.sha }}
         with:
           # Required by Accurics
           terraform-version: 0.14.7
@@ -40,8 +42,6 @@ jobs:
           # Optional args
           fail-on-violations: false
           url: "https://cloud.tenable.com/cns"
-          scan-mode: "scan"
-          pipeline: true
       - name: Display statistics
         run: '
             echo ""
