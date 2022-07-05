@@ -22,28 +22,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Accurics Scan
-        uses: accurics/accurics-action@v1.3
+      - name: Accurics
+        uses: accurics/accurics-action@v2.0.1
         id: accurics
         env:
-          # Credentials are required by Terraform. They can be specified using any method that Terraform accepts
+          # Required by Terraform
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          REPO_URL: git://github.com/bradles76/ScanGithubAct.git
+          REPO_URL: https://github.com/bradles76/ScanGithubAct.git
         with:
-          # A specific Terraform version can be chosen (default=latest)
-          terraform-version: 0.14.7
-          # Specify any Terraform plan args here. Variables can be specified as follows (enclosed in single quotes)
-          plan-args: '-var public_key_path=terraform-poc01.pub -var key_name=terraform-poc01'
-          # Specify the ENV_ID and APP_ID from the config file
+          # Required by Accurics
           app-id: ${{ secrets.ACCURICS_APP_ID }}
           env-id: ${{ secrets.ACCURICS_ENV_ID }}
-          # Specify the location to the repository
-          repo: https://github.com/bradles76/ScanGithubAct
-          # Fail the build when violations are found:
+          repo: "https://github.com/bradles76/ScanGithubAct.git"
+          # Optional args
+          plan-args: '-var myvar1=val1 -var myvar2=val2'
           fail-on-violations: false
-          # Fail the build on all errors
-          fail-on-all-errors: false
+          url: "https://cloud.tenable.com/cns"
+          scan-mode: "scan"
+          pipeline: true
       - name: Display statistics
         run: '
             echo ""
