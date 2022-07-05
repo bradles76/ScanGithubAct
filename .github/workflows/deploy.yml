@@ -18,7 +18,7 @@ jobs:
   # This workflow contains a job to scan IaC with Tenable.cs
   accurics_test_job:
     runs-on: ubuntu-latest
-    name: My GitHub Workflow With Accurics
+    name: My GitHub Workflow With Tenable.cs
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -69,6 +69,7 @@ jobs:
   deploy:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    name: Deploy EC2 via CFN
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it

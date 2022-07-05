@@ -14,7 +14,7 @@ Parameters:
     Type: String
     
 Resources:
-  TekLoonTestInstance:
+  TestInstance:
     Type: AWS::EC2::Instance
     Properties:
       AvailabilityZone: ap-southeast-2a
