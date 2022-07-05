@@ -12,10 +12,59 @@ on:
       region:
         description: 'AWS Region to deploy to'
         required: true
-        default: 'ap-southeast-1'
-
+        default: 'ap-southeast-2'
 
 jobs:
+  # This workflow contains a job to scan IaC with Tenable.cs
+  accurics_test_job:
+    runs-on: ubuntu-latest
+    name: My GitHub Workflow With Accurics
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Accurics Scan
+        uses: accurics/accurics-action@v1.3
+        id: accurics
+        env:
+          # Credentials are required by Terraform. They can be specified using any method that Terraform accepts
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          REPO_URL: git://github.com/bradles76/ScanGithubAct.git
+        with:
+          # A specific Terraform version can be chosen (default=latest)
+          terraform-version: 0.14.7
+          # Specify any Terraform plan args here. Variables can be specified as follows (enclosed in single quotes)
+          plan-args: '-var public_key_path=terraform-poc01.pub -var key_name=terraform-poc01'
+          # Specify the ENV_ID and APP_ID from the config file
+          app-id: ${{ secrets.ACCURICS_APP_ID }}
+          env-id: ${{ secrets.ACCURICS_ENV_ID }}
+          # Specify the location to the repository
+          repo: https://github.com/bradles76/ScanGithubAct
+          # Fail the build when violations are found:
+          fail-on-violations: false
+          # Fail the build on all errors
+          fail-on-all-errors: false
+      - name: Display statistics
+        run: '
+            echo ""
+            echo "Environment Name           : ${{ steps.accurics.outputs.env-name }}";
+            echo "Repository                 : ${{ steps.accurics.outputs.repo }}";
+            echo "Violation Count            : ${{ steps.accurics.outputs.num-violations }}";
+            echo "Resource Count             : ${{ steps.accurics.outputs.num-resources }}";
+            echo ""
+            echo "Native Resources           : ${{ steps.accurics.outputs.native }}";
+            echo "Inherited Resources        : ${{ steps.accurics.outputs.inherited }}";
+            echo ""
+            echo "High-Severity Violations   : ${{ steps.accurics.outputs.high }}";
+            echo "Medium-Severity Violations : ${{ steps.accurics.outputs.medium }}";
+            echo "Low-Severity Violations    : ${{ steps.accurics.outputs.low }}";
+            echo ""
+            echo "Drift                      : ${{ steps.accurics.outputs.drift }}";
+            echo "IaC Drift                  : ${{ steps.accurics.outputs.iacdrift }}";
+            echo "Cloud Drift                : ${{ steps.accurics.outputs.clouddrift }}";
+            echo ""
+          '
+
   # This workflow contains a single job called "deploy"
   deploy:
     # The type of runner that the job will run on
@@ -30,15 +79,15 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.ACCESS_KEY_SECRET }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ github.event.inputs.region }}
 
       # Deploy to AWS CloudFormation
       - name: Deploy to AWS CloudFormation
         uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
-          name: tekloon-test-stack
+          name: abradley-test-stack
           template: test-stack.yaml
           no-fail-on-empty-changeset: "1"
           parameter-overrides: "EC2InstanceType=t2.micro"
