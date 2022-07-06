@@ -37,10 +37,10 @@ jobs:
           app-id: ${{ secrets.ACCURICS_APP_ID }}
           env-id: ${{ secrets.ACCURICS_ENV_ID }}
           # Optional args
-          terraform-version: 0.14.7
-          plan-args: '-var myvar1=val1 -var myvar2=val2'
+          repo: https://github.com/bradles76/ScanGithubAct
           fail-on-violations: false
           url: "https://cloud.tenable.com/cns"
+          pipeline: true
       - name: Display statistics
         run: '
             echo ""
