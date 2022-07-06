@@ -40,7 +40,7 @@ jobs:
           # Optional args
           fail-on-violations: false
           url: "https://cloud.tenable.com/cns"
-          scan-mode: "plan"
+          scan-mode: "scan"
           pipeline: true
       - name: Display statistics
         run: '
